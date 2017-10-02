@@ -9,6 +9,13 @@ namespace VJ.ConsoleAppWebAPI
     {
         public Startup(IHostingEnvironment env)
         {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+
+            builder.AddEnvironmentVariables();
+            Configuration = builder.Build();
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -16,6 +23,8 @@ namespace VJ.ConsoleAppWebAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddOptions();
+            services.Configure<Appsettings>(Configuration.GetSection("Appsettings"));
         }
 
         public void Configure(IApplicationBuilder app)
